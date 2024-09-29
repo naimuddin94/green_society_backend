@@ -19,6 +19,7 @@ const userSchema = new Schema<IUser, IUserModel, IUserMethods>(
       type: String,
       required: true,
       unique: true,
+      lowercase: true,
     },
     password: {
       type: String,
@@ -32,6 +33,22 @@ const userSchema = new Schema<IUser, IUserModel, IUserMethods>(
     phone: {
       type: String,
       required: false,
+    },
+    followers: {
+      type: [Schema.Types.ObjectId],
+      required: false,
+    },
+    following: {
+      type: [Schema.Types.ObjectId],
+      required: false,
+    },
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+    premium: {
+      type: Boolean,
+      default: false,
     },
     role: {
       type: String,

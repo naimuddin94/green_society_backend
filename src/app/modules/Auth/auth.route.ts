@@ -27,7 +27,7 @@ router
   .route('/signout')
   .post(
     validateRequestCookies(UserValidation.refreshTokenValidationSchema),
-    AuthController.login
+    AuthController.logout
   );
 
 router

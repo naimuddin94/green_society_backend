@@ -7,8 +7,19 @@ import User from '../User/user.model';
 
 // Save new user information in the database
 const saveUserIntoDB = async (req: Request) => {
+  const { accessToken } = req.cookies;
   const userData = req.body;
 
+  if (accessToken) {
+    const { role } = await verifyToken(accessToken);
+    if (userData?.role && role !== 'admin') {
+      userData['role'] = 'user';
+    }
+  } else {
+    if (userData?.role) {
+      userData['role'] = 'user';
+    }
+  }
   const isUserExists = await User.isUserExists(userData.email);
 
   if (isUserExists) {
@@ -30,7 +41,7 @@ const saveUserIntoDB = async (req: Request) => {
 
   // Convert the result to an object and remove the password field
   const response = await User.findById(result._id).select(
-    '-password -createdAt -updatedAt -refreshToken'
+    'name image address phone'
   );
 
   return response;
@@ -66,24 +77,18 @@ const loginUser = async (payload: ILoginPayload) => {
 
 const logoutUser = async (accessToken: string) => {
   // checking if the token is missing
-  if (!accessToken) {
-    throw new AppError(
-      httpStatus.SERVICE_UNAVAILABLE,
-      'You already have no credentials!'
-    );
+  if (accessToken) {
+    const { id } = await verifyToken(accessToken);
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      throw new AppError(httpStatus.NOT_FOUND, message.user_not_exist);
+    }
+
+    user.refreshToken = '';
+    await user.save();
   }
-
-  // checking if the given token is valid
-  const { id } = await verifyToken(accessToken);
-
-  const user = await User.findById(id);
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, message.user_not_exist);
-  }
-
-  user.refreshToken = '';
-  await user.save();
 
   return null;
 };
