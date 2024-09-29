@@ -28,8 +28,21 @@ const updatePostValidationSchema = z.object({
   body: postValidationSchema.partial(),
 });
 
+
+const reactToPostValidationSchema = z.object({
+  body: z.object({
+    postId: z.string({
+      required_error: 'Post ID is required',
+    }),
+    reaction: z.enum(['like', 'dislike'], {
+      required_error: 'Reaction is required',
+    }),
+  }),
+});
+
 export const PostValidation = {
   postValidationSchema,
   createPostValidationSchema,
   updatePostValidationSchema,
+  reactToPostValidationSchema,
 };
