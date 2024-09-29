@@ -36,10 +36,12 @@ const userSchema = new Schema<IUser, IUserModel, IUserMethods>(
     },
     followers: {
       type: [Schema.Types.ObjectId],
+      ref: 'User',
       required: false,
     },
     following: {
       type: [Schema.Types.ObjectId],
+      ref: 'User',
       required: false,
     },
     verified: {
