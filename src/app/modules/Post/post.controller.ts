@@ -5,7 +5,10 @@ import { PostService } from './post.service';
 
 // Get all posts from
 const fetchPosts = asyncHandler(async (req, res) => {
-  const result = await PostService.getAllPostFromDB(req.query, req.cookies.accessToken);
+  const result = await PostService.getAllPostFromDB(
+    req.query,
+    req.cookies.accessToken
+  );
 
   res
     .status(httpStatus.OK)
@@ -50,7 +53,7 @@ const deletePost = asyncHandler(async (req, res) => {
 
 // React to a post
 const reactToPost = asyncHandler(async (req, res) => {
-  const result = await PostService.posReactionIntoDB(req);
+  const result = await PostService.postReactionIntoDB(req);
 
   res
     .status(httpStatus.OK)

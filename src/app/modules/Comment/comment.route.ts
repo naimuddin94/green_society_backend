@@ -13,16 +13,14 @@ router
     CommentController.createComment
   );
 
-// Route for updating a comment
+// Route for updating and deleting a comment
 router
   .route('/comment/:commentId')
   .patch(
     validateRequest(CommentValidation.updateCommentValidationSchema),
     CommentController.updateComment
-  );
-
-// Route for deleting a comment
-router.route('/comment/:commentId').delete(CommentController.deleteComment);
+  )
+  .delete(CommentController.deleteComment);
 
 // Route for getting comments for a specific post
 router.route('/:postId/comments').get(CommentController.getComments);

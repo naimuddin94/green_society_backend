@@ -4,14 +4,14 @@ import { z } from 'zod';
 import { USER_ROLE } from './user.constant';
 import { UserValidation } from './user.validation';
 
-export interface IUser
-  extends z.infer<typeof UserValidation.userValidationSchema> {
+export interface IUser extends z.infer<typeof UserValidation.userValidationSchema> {
   image?: string;
   refreshToken?: string;
   passwordChangedAt?: Date;
   followers: ObjectId[];
   following: ObjectId[];
   block: ObjectId[];
+  blockedBy: ObjectId[];
   verified: boolean;
   premium: boolean;
 }

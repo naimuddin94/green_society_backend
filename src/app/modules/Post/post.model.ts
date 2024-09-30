@@ -28,6 +28,10 @@ const postSchema = new Schema<IPost>(
       enum: [...postCategory],
       required: true,
     },
+    premium: {
+      type: Boolean,
+      default: false,
+    },
     like: {
       type: [Schema.Types.ObjectId],
       ref: 'User',

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { postCategory } from './post.constant';
+import { postCategory, postReaction } from './post.constant';
 
 const postValidationSchema = z.object({
   title: z
@@ -34,8 +34,9 @@ const reactToPostValidationSchema = z.object({
     postId: z.string({
       required_error: 'Post ID is required',
     }),
-    reaction: z.enum(['like', 'dislike'], {
+    reaction: z.enum([...postReaction] as [string], {
       required_error: 'Reaction is required',
+      message: 'Reaction is like or dislike',
     }),
   }),
 });

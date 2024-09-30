@@ -58,10 +58,9 @@ const createCommentIntoDB = async (req: Request) => {
     session.endSession();
 
     return comment;
-  } catch (error) {
+  } catch {
     await session.abortTransaction();
     session.endSession();
-    console.log({ error });
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
       message.comment_creating_error
@@ -86,14 +85,40 @@ const updateCommentIntoDB = async (req: Request) => {
 };
 
 const deleteCommentFromDB = async (req: Request) => {
-  const { commentId } = req.params; // Get the comment ID from request parameters
+  const { commentId } = req.params;
 
-  const deletedComment = await Comment.findByIdAndDelete(commentId);
-  if (!deletedComment) {
-    throw new AppError(httpStatus.NOT_FOUND, message.comment_not_exist);
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+
+    const deletedComment = await Comment.findByIdAndDelete(commentId, {
+      session,
+    });
+    if (!deletedComment) {
+      throw new AppError(httpStatus.NOT_FOUND, message.comment_not_exist);
+    }
+
+    await Post.findByIdAndUpdate(
+      deletedComment.postId,
+      {
+        $pull: { comments: deletedComment._id },
+      },
+      { session }
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return deletedComment;
+  } catch {
+    await session.abortTransaction();
+    await session.endSession();
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      message.comment_creating_error
+    );
   }
-
-  return deletedComment;
 };
 
 const getCommentsForPost = async (req: Request) => {

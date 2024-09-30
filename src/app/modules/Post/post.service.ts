@@ -14,18 +14,30 @@ const getAllPostFromDB = async (
   query: Record<string, unknown>,
   accessToken?: string
 ) => {
-  let filter = {};
+  let filter: Record<string, unknown> = {};
 
   if (accessToken) {
     const { id } = await verifyToken(accessToken);
     const user = await User.findById(id);
 
-    // Check if the user has blocked other users
-    if (user?.block?.length) {
-      filter = { author: { $nin: user.block } };
+    // Check if the user has blocked other users or has been blocked
+    if (user?.block?.length || user?.blockedBy?.length) {
+      filter = {
+        author: {
+          $nin: [...(user.block || []), ...(user.blockedBy || [])],
+        },
+      };
+    }
+
+    // If user is premium, show all posts including premium posts
+    if (user?.premium || user?.role === 'admin') {
+      filter.premium = { $in: [true, false] };
+    } else {
+      filter.$or = [{ premium: { $ne: true } }, { author: id }];
     }
   }
 
+  // Building the query with filters and other options
   const postQuery = new QueryBuilder(
     Post.find(filter).populate({
       path: 'comments',
@@ -49,7 +61,7 @@ const getAllPostFromDB = async (
 
 // Fetch single post from the database
 const getSinglePostFromDB = async (id: string) => {
-  const result = await Post.findById(id);
+  const result = await Post.findById(id).populate('comments');
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, message.post_not_exist);
@@ -169,7 +181,7 @@ const deletePostFromDB = async (req: Request) => {
 };
 
 // Reaction a post
-const posReactionIntoDB = async (req: Request) => {
+const postReactionIntoDB = async (req: Request) => {
   const { accessToken } = req.cookies;
   const { postId, reaction } = req.body;
 
@@ -234,5 +246,5 @@ export const PostService = {
   savePostIntoDB,
   updatePostIntoDB,
   deletePostFromDB,
-  posReactionIntoDB,
+  postReactionIntoDB,
 };

@@ -20,6 +20,7 @@ const message = {
   user_not_exist: 'User does not exist',
   user_delete: 'User deleted successfully',
   user_blocked: 'User blocked successfully',
+  user_blocking_error: 'Something went wrong while blocking the user',
 
   // post related
   post_created: 'Post created successfully',
