@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { postCategory } from './post.constant';
 
 const postValidationSchema = z.object({
   title: z
@@ -12,7 +13,7 @@ const postValidationSchema = z.object({
       required_error: 'Content is required',
     })
     .min(10, { message: 'Content must be at least 10 characters long' }),
-  category: z.enum(['Vegetables', 'Flowers', 'Landscaping', 'Other'], {
+  category: z.enum([...postCategory] as [string], {
     required_error: 'Category is required',
   }),
   tags: z.array(z.string()).optional(),
@@ -27,7 +28,6 @@ const createPostValidationSchema = z.object({
 const updatePostValidationSchema = z.object({
   body: postValidationSchema.partial(),
 });
-
 
 const reactToPostValidationSchema = z.object({
   body: z.object({

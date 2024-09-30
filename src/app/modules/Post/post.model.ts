@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { postCategory } from './post.constant';
 import { IPost } from './post.interface';
 
 // Define the post schema
@@ -22,6 +23,11 @@ const postSchema = new Schema<IPost>(
       type: [String],
       required: false,
     },
+    category: {
+      type: String,
+      enum: [...postCategory],
+      required: true,
+    },
     like: {
       type: [Schema.Types.ObjectId],
       ref: 'User',
@@ -41,7 +47,7 @@ const postSchema = new Schema<IPost>(
   {
     timestamps: true,
     versionKey: false,
-    toJSON: { virtuals: true }, 
+    toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
 );

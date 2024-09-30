@@ -5,11 +5,20 @@ import { AppResponse, asyncHandler, options } from '../../utils';
 import { AuthService } from './auth.service';
 
 const createUser = asyncHandler(async (req, res) => {
-  const result = await AuthService.saveUserIntoDB(req);
+  const { response, accessToken, refreshToken } =
+    await AuthService.saveUserIntoDB(req);
 
   res
     .status(httpStatus.CREATED)
-    .json(new AppResponse(httpStatus.CREATED, result, message.user_created));
+    .cookie('refreshToken', refreshToken, options as CookieOptions)
+    .cookie('accessToken', accessToken, options as CookieOptions)
+    .json(
+      new AppResponse(
+        httpStatus.CREATED,
+        { ...response?.toObject(), accessToken, refreshToken },
+        message.user_created
+      )
+    );
 });
 
 const login = asyncHandler(async (req, res) => {
@@ -19,7 +28,6 @@ const login = asyncHandler(async (req, res) => {
 
   res
     .status(200)
-    // .cookie('token', token, options as CookieOptions)
     .cookie('refreshToken', refreshToken, options as CookieOptions)
     .cookie('accessToken', accessToken, options as CookieOptions)
     .json(

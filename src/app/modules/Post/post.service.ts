@@ -2,9 +2,61 @@
 
 import { Request } from 'express';
 import httpStatus from 'http-status';
+import QueryBuilder from '../../builders/QueryBuilder';
 import { message, verifyToken } from '../../lib';
 import { AppError, fileUploadOnCloudinary } from '../../utils';
+import User from '../User/user.model';
+import { postSearchableFields } from './post.constant';
 import Post from './post.model';
+
+// Fetch all post from the database
+const getAllPostFromDB = async (
+  query: Record<string, unknown>,
+  accessToken?: string
+) => {
+  let filter = {};
+
+  if (accessToken) {
+    const { id } = await verifyToken(accessToken);
+    const user = await User.findById(id);
+
+    // Check if the user has blocked other users
+    if (user?.block?.length) {
+      filter = { author: { $nin: user.block } };
+    }
+  }
+
+  const postQuery = new QueryBuilder(
+    Post.find(filter).populate({
+      path: 'comments',
+    }),
+    query
+  )
+    .search(postSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const result = await postQuery.modelQuery;
+  const meta = await postQuery.countTotal();
+
+  return {
+    meta,
+    result,
+  };
+};
+
+// Fetch single post from the database
+const getSinglePostFromDB = async (id: string) => {
+  const result = await Post.findById(id);
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, message.post_not_exist);
+  }
+
+  return result;
+};
 
 // Save a new post into the database
 const savePostIntoDB = async (req: Request) => {
@@ -177,6 +229,8 @@ const posReactionIntoDB = async (req: Request) => {
 };
 
 export const PostService = {
+  getAllPostFromDB,
+  getSinglePostFromDB,
   savePostIntoDB,
   updatePostIntoDB,
   deletePostFromDB,

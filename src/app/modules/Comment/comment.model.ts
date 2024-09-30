@@ -21,8 +21,8 @@ const commentSchema = new Schema<IComment>(
     },
   },
   {
-    timestamps: true, // Automatically add createdAt and updatedAt fields
-    versionKey: false, // Disable the version key (_v)
+    timestamps: true,
+    versionKey: false, 
   }
 );
 

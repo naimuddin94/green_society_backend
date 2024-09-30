@@ -3,6 +3,24 @@ import { message } from '../../lib';
 import { AppResponse, asyncHandler } from '../../utils';
 import { PostService } from './post.service';
 
+// Get all posts from
+const fetchPosts = asyncHandler(async (req, res) => {
+  const result = await PostService.getAllPostFromDB(req.query, req.cookies.accessToken);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, message.posts_fetched));
+});
+
+// Get single posts from
+const fetchPost = asyncHandler(async (req, res) => {
+  const result = await PostService.getSinglePostFromDB(req.params.postId);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, message.post_fetched));
+});
+
 // Create a new post
 const createPost = asyncHandler(async (req, res) => {
   const result = await PostService.savePostIntoDB(req);
@@ -40,6 +58,8 @@ const reactToPost = asyncHandler(async (req, res) => {
 });
 
 export const PostController = {
+  fetchPosts,
+  fetchPost,
   createPost,
   updatePost,
   deletePost,

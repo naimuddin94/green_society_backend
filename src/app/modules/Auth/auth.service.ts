@@ -7,11 +7,11 @@ import User from '../User/user.model';
 
 // Save new user information in the database
 const saveUserIntoDB = async (req: Request) => {
-  const { accessToken } = req.cookies;
+  const { accessToken: requestAccessToken } = req.cookies;
   const userData = req.body;
 
-  if (accessToken) {
-    const { role } = await verifyToken(accessToken);
+  if (requestAccessToken) {
+    const { role } = await verifyToken(requestAccessToken);
     if (userData?.role && role !== 'admin') {
       userData['role'] = 'user';
     }
@@ -39,12 +39,19 @@ const saveUserIntoDB = async (req: Request) => {
     );
   }
 
+  const accessToken = result.generateAccessToken();
+  const refreshToken = result.generateRefreshToken();
+
+  result.refreshToken = refreshToken;
+
+  await result.save();
+
   // Convert the result to an object and remove the password field
   const response = await User.findById(result._id).select(
     'name image address phone'
   );
 
-  return response;
+  return { response, accessToken, refreshToken };
 };
 
 const loginUser = async (payload: ILoginPayload) => {

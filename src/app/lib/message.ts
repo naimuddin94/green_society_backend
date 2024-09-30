@@ -23,6 +23,8 @@ const message = {
 
   // post related
   post_created: 'Post created successfully',
+  post_fetched: 'Post retrieved successfully',
+  posts_fetched: 'Posts retrieved successfully',
   post_creating_error: 'Something went wrong while creating the post',
   post_updated: 'Post updated successfully',
   post_updating_error: 'Something went wrong while updating the post',

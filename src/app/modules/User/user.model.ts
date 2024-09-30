@@ -44,6 +44,11 @@ const userSchema = new Schema<IUser, IUserModel, IUserMethods>(
       ref: 'User',
       required: false,
     },
+    block: {
+      type: [Schema.Types.ObjectId],
+      ref: 'User',
+      required: false,
+    },
     verified: {
       type: Boolean,
       default: false,
