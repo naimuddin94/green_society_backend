@@ -4,7 +4,7 @@ import { validateRequest } from '../../middlewares';
 import { PostController } from './post.controller';
 import { PostValidation } from './post.validation';
 
-const upload = multer(); // Initialize multer for handling file uploads
+const upload = multer();
 
 const router = Router();
 

@@ -17,7 +17,6 @@ const postValidationSchema = z.object({
     required_error: 'Category is required',
   }),
   tags: z.array(z.string()).optional(),
-  images: z.array(z.string()).optional(),
   premium: z.boolean().default(false),
 });
 

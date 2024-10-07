@@ -5,8 +5,8 @@ const message = {
   invalid_data_format: 'Requested data is in an invalid format',
 
   // auth related
-  login: 'Login Successfully',
-  logout: 'Logout Successfully',
+  login: 'Signin Successfully',
+  logout: 'Signout Successfully',
   password_not_match: 'Password does not match',
   password_changed: 'Password changed successfully',
   invalid_credentials: 'Invalid credentials',

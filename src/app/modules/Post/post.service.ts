@@ -39,9 +39,21 @@ const getAllPostFromDB = async (
 
   // Building the query with filters and other options
   const postQuery = new QueryBuilder(
-    Post.find(filter).populate({
-      path: 'comments',
-    }),
+    Post.find(filter).populate([
+      {
+        path: 'author',
+        select: 'name image',
+      },
+      {
+        path: 'comments',
+        select: 'author content createdAt updatedAt',
+        populate: { path: 'author', select: 'name image' },
+      },
+      {
+        path: 'like',
+        select: 'name image',
+      },
+    ]),
     query
   )
     .search(postSearchableFields)
@@ -84,6 +96,8 @@ const savePostIntoDB = async (req: Request) => {
   const { id } = await verifyToken(accessToken);
 
   postData.author = id;
+
+  console.log('from PS 100', req.files);
 
   // Handle image uploads if files are present
   if (req.files) {
