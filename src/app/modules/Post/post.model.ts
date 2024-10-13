@@ -5,11 +5,6 @@ import { IPost } from './post.interface';
 // Define the post schema
 const postSchema = new Schema<IPost>(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
     content: {
       type: String,
       required: true,

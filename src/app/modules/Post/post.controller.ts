@@ -60,6 +60,18 @@ const reactToPost = asyncHandler(async (req, res) => {
     .json(new AppResponse(httpStatus.OK, result, message.post_reaction));
 });
 
+// Premium post
+const makePremium = asyncHandler(async (req, res) => {
+  const { accessToken } = req.cookies;
+  const { postId } = req.params;
+
+  const result = await PostService.makePremiumPostIntoDB(postId, accessToken);
+
+  res
+    .status(httpStatus.OK)
+    .json(new AppResponse(httpStatus.OK, result, message.post_premium_status));
+});
+
 export const PostController = {
   fetchPosts,
   fetchPost,
@@ -67,4 +79,5 @@ export const PostController = {
   updatePost,
   deletePost,
   reactToPost,
+  makePremium,
 };

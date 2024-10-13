@@ -32,6 +32,7 @@ const message = {
   post_reaction: 'Reaction updated successfully',
   post_delete: 'Post deleted successfully',
   post_not_exist: 'Post does not exist',
+  post_premium_status: 'Post status updated successfully',
 
   // comment related
   comment_created: 'Comment added successfully',

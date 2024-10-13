@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Request } from 'express';
 import httpStatus from 'http-status';
 import QueryBuilder from '../../builders/QueryBuilder';
@@ -73,7 +72,21 @@ const getAllPostFromDB = async (
 
 // Fetch single post from the database
 const getSinglePostFromDB = async (id: string) => {
-  const result = await Post.findById(id).populate('comments');
+  const result = await Post.findById(id).populate([
+    {
+      path: 'author',
+      select: 'name image',
+    },
+    {
+      path: 'comments',
+      select: 'author content createdAt updatedAt',
+      populate: { path: 'author', select: 'name image' },
+    },
+    {
+      path: 'like',
+      select: 'name image',
+    },
+  ]);
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, message.post_not_exist);
@@ -180,11 +193,15 @@ const deletePostFromDB = async (req: Request) => {
   }
 
   // Verify the user's access token
-  const { id } = await verifyToken(accessToken);
+  const { id, role } = await verifyToken(accessToken);
   const post = await Post.findById(postId);
 
+  if (!post) { 
+    throw new AppError(httpStatus.NOT_FOUND, message.post_not_exist);
+  }
+
   // Ensure the post exists and the user is authorized to delete it
-  if (!post || post.author.toString() !== id) {
+  if (post.author.toString() !== id && role !== "admin") {
     throw new AppError(httpStatus.FORBIDDEN, message.forbidden);
   }
 
@@ -254,6 +271,33 @@ const postReactionIntoDB = async (req: Request) => {
   return post;
 };
 
+// Make premium a post into database
+const makePremiumPostIntoDB = async (postId: string, accessToken: string) => {
+  // Ensure the user is authenticated
+  if (!accessToken) {
+    throw new AppError(httpStatus.UNAUTHORIZED, message.unauthorized);
+  }
+
+  // Verify the user's access token
+  const { role } = await verifyToken(accessToken);
+
+  const post = await Post.findById(postId);
+
+  if (role !== 'admin') {
+    throw new AppError(httpStatus.UNAUTHORIZED, message.unauthorized);
+  }
+
+  const result = await Post.findByIdAndUpdate(
+    postId,
+    {
+      premium: !post?.premium,
+    },
+    { new: true }
+  );
+
+  return result;
+};
+
 export const PostService = {
   getAllPostFromDB,
   getSinglePostFromDB,
@@ -261,4 +305,5 @@ export const PostService = {
   updatePostIntoDB,
   deletePostFromDB,
   postReactionIntoDB,
+  makePremiumPostIntoDB,
 };

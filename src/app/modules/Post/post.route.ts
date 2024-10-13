@@ -1,8 +1,9 @@
 import { Router } from 'express';
 import multer from 'multer';
-import { validateRequest } from '../../middlewares';
+import { validateRequest, validateRequestCookies } from '../../middlewares';
 import { PostController } from './post.controller';
 import { PostValidation } from './post.validation';
+import { UserValidation } from '../User/user.validation';
 
 const upload = multer();
 
@@ -35,6 +36,13 @@ router
   .post(
     validateRequest(PostValidation.reactToPostValidationSchema),
     PostController.reactToPost
+  );
+
+router
+  .route('/premium/:postId')
+  .patch(
+    validateRequestCookies(UserValidation.accessTokenValidationSchema),
+    PostController.makePremium
   );
 
 export const postRouters = router;

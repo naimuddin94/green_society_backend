@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { postCategory, postReaction } from './post.constant';
 
 const postValidationSchema = z.object({
-  title: z
-    .string({
-      required_error: 'Title is required',
-    })
-    .min(3, { message: 'Title must be at least 3 characters long' })
-    .max(100, { message: 'Title cannot exceed 100 characters' }),
+  // title: z
+  //   .string({
+  //     required_error: 'Title is required',
+  //   })
+  //   .min(3, { message: 'Title must be at least 3 characters long' })
+  //   .max(100, { message: 'Title cannot exceed 100 characters' }),
   content: z
     .string({
       required_error: 'Content is required',

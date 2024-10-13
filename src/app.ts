@@ -11,7 +11,6 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
-import path from 'path';
 import routes from './app/routes';
 import { globalErrorHandler, notFound } from './app/utils';
 
@@ -20,7 +19,7 @@ const app: Application = express();
 app.use(
   cors({
     credentials: true,
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000', 'https://green-society-client.vercel.app'],
   })
 );
 app.use(cookieParser());
@@ -33,7 +32,7 @@ app.use('/api/v1', routes);
 
 //Testing
 app.get('/', (req: Request, res: Response, next: NextFunction) => {
-  res.sendFile(path.join(__dirname, './app/views/index.html'));
+  res.send({ message: 'Green Society Backend API Running...' });
 });
 
 //global error handler
